@@ -1,0 +1,213 @@
+.model small
+.stack 100h
+.data
+    crlf db 10,13,'$'
+    DK_LED EQU 2070H
+    tb db 'Vui long chon che do hien thi led: $'
+    cnt db ?
+    chay db ?
+    list db 00000001b,00000011b,00000111b,00001111b,00011111b,00111111b,01111111b,11111111b
+.code
+main proc
+    mov ax,@data
+    mov ds,ax
+    
+    nhap:
+        mov ah,9
+        lea dx,tb
+        int 21h
+        mov ah,1
+        int 21h
+        cmp al,'1'
+        je solve1
+        cmp al,'2'
+        je solve2
+        cmp al,'3'
+        je solve3
+        cmp al,'4'
+        je solve4
+        cmp al,'5'
+        je solve5
+        cmp al,'0'
+        je thoat
+        
+    solve1:
+        call cheDo1
+        jmp nhap
+    solve2:
+        call cheDo2
+        jmp nhap
+    solve3:
+        call cheDo3
+        jmp nhap
+    solve4:
+        call cheDo4
+        jmp nhap    
+    solve5:
+        call cheDo5
+        jmp nhap   
+    thoat:
+    mov ah,4ch
+    int 21h
+main Endp
+
+cheDo1 proc             ;sang tat dong thoi
+  
+  lap1:
+    mov al,11111111b    ;trang thai tat ca den bat 
+    mov dx,dk_led       ;(hoi kho giai thich) chuyen du lieu dk_led vao dx
+    out dx,al           ; hien thi den
+    mov cx,12           ; do tre 12 chu ki
+  tre_11:
+    LOOP tre_11         ; ham tre 1
+    mov al,0            ;trang thai tat ca den tat
+    out dx,al           ;hien thi den
+    mov cx,12           ;do tre 12 chu ki
+  tre_12:NOP            ;ham tre  2
+    loop tre_12
+    jmp lap1           
+  
+  mov ah,9              ; xuong dong
+  lea dx,crlf
+  int 21h
+  ret   
+cheDo1 endp
+
+cheDo2 proc    ;  sang xen ke
+    lap2:
+        
+        mov al,01010101b      ; den bat o vi tri chan
+        mov dx,dk_led         ; chuyen cong dk_led vao dx
+        out dx,al             ; hien thi den
+        mov cx,32             ; do tre 32 chu ki
+    tre_21:                   ; ham tre
+        NOP
+        loop tre_21
+        mov al,10101010b      ; den bat o tri le
+        out dx,al             ; hien thi den
+        mov cx,32             ; do tre 32 chu ki
+    tre_22:                   ; ham tre
+        NOP
+        loop tre_22
+        jmp lap2              
+
+    mov ah,9                  ; xuong dong
+    lea dx,crlf
+    int 21h    
+    ret
+    
+cheDo2 endp
+
+cheDo3 proc  ; sang lan luot
+   lap3:
+       mov al,00000001b          ; sang den o vi tri thu 8
+       mov dx,dk_led             ; chuyen du lieu vao cong dk_led
+       out dx,al                 ; hien thi den led
+       mov cx,32                 ; tre 32 chu ki
+   tre_3:                        ; ham tre
+       NOP
+       loop tre_3                
+       ror al,1                  ; quay phai 1 -> vi tri bat o vi tri so 1
+       mov dx,dk_led             ; chuyen cong dk_led vao dx
+       out dx,al                 ; hien thi led
+       mov cx,32                 ; tre 32 chu ki
+       jmp tre_3
+   
+   mov ah,9                       ; xuong dong
+   lea dx,crlf
+   int 21h      
+   ret 
+cheDo3 endp
+
+cheDo4 proc          ;den tat dan
+    
+    lap4:
+        mov chay,10000000b      ; dung bien chay lam so bi tru( ban dau 1111111b - 10000000b=01111111b)
+                                ; thi den se tat o vi tri so 1
+        mov al,11111111b        ; hien thi tat ca cac den
+        mov dx,dk_led           ; chuyen cong dk_led vao dx
+        out dx,al               ; hien thi den
+        mov cx,64               ; tre 64 chu ki
+    tre_4:                      ; ham tre
+        NOP
+        loop tre_4
+        sub al,chay             ; 1111111b - 10000000b=01111111b
+        mov dx,dk_led           ; chuyen cong dk_led vao dx
+        shr chay,1              ; dich phai 1 (10000000b ->01000000b)
+        out dx,al               ; hien thi led
+        cmp al,00000000b        ; neu den tat het thi khoi tao lai trang thai den bat ban dau
+        je lap4                 ; nhay den lap4 khoi tao lai giong nhu ban dau
+        mov cx,32               ; tre 32 chu ki
+        jmp tre_4               
+
+    mov ah,9
+    lea dx,crlf
+    int 21h
+    ret
+    
+cheDo4 endp
+
+cheDo5 proc       ; sau bo toi
+   lea si,list    ; do dai sau bo
+   lap5:
+       
+       mov al,00000001b
+       mov dx,dk_led
+       out dx,al
+       mov cx,32
+       hoan1:
+            NOP
+            loop hoan1
+       lea di,list
+       mov cnt,1     ;xoay sang phai cnt bit
+   lap_phu:          ; lap cho den khi den do dai phu hop
+       cmp al,[si]
+       je xuly
+       inc di
+       mov al,[di]
+       mov dx,dk_led
+       out dx,al
+       mov cx,16
+       hoan2:
+            NOP
+            loop hoan2
+       inc cnt
+       jmp lap_phu
+       xuly:
+            mov dx,dk_led
+            out dx,al
+            cmp [si],11111111b
+            je return
+            mov cx,16
+       
+       
+   tre_5:
+       NOP
+       loop tre_5       
+       rol al,1       ;dich di 1 bit
+       mov dx,dk_led
+       out dx,al
+       mov bl,[si]    ;gan bit con sau hien tai cho bl
+       mov cl,cnt     ;so luong bit 1 can xoay 
+       ror bl,cl      ;vi tri ket thuc
+       mov cx,16      ;delay 32
+       cmp al,bl      ;so sanh neu bang thi chay trang thai sau moi
+       je hoan3
+       jmp tre_5
+       hoan3:
+        NOP
+        loop hoan3
+        inc si
+        jmp lap5
+   return:
+   mov ah,9
+   lea dx,crlf
+   int 21h      
+   ret 
+    
+cheDo5 endp
+
+    
+
+
+
