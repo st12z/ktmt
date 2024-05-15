@@ -65,7 +65,7 @@ cheDo1 proc             ; Đèn sáng tắt đồng thời
     mov cx,12           ; Độ trễ 12 chu kì
   tre_12:NOP            ; Hàm trễ 2
     loop tre_12
-    jmp lap1           
+    jmp lap1            ; Lặp lại trạng thái bật tắt
   
   mov ah,9              ; Xuống dòng
   lea dx,crlf
@@ -89,7 +89,7 @@ cheDo2 proc    ;  Sáng xen kẽ
     tre_22:                   ; Hàm trễ
         NOP
         loop tre_22
-        jmp lap2              
+        jmp lap2              ; Lặp lại trạng thái bật tắt vị trí chẵn
 
     mov ah,9                  ; Xuống dòng
     lea dx,crlf
@@ -111,7 +111,7 @@ cheDo3 proc  ; Đèn sáng lần lượt
        mov dx,dk_led             ; Gán dữ liệu cổng dk_led vào thanh ghi dx
        out dx,al                 ; Điều khiển cổng ra -> hiển thị trạng thái led
        mov cx,32                 ; Độ trễ 32 chu kì
-       jmp tre_3
+       jmp tre_3                 ; Lặp lại quá trình dịch bit trong nhãn tre_3
    
    mov ah,9                       ; Xuống dòng
    lea dx,crlf
@@ -138,7 +138,7 @@ cheDo4 proc          ;Đèn sáng tắt dần
         cmp al,00000000b        ; Nếu tất cả các đèn tắt hết reset lại trạng thái bật ban đầu
         je lap4                 
         mov cx,32               ; Độ trễ 32 chu kì
-        jmp tre_4               
+        jmp tre_4               ; nhảy lên nhãn tre_4 tiếp tục quá trình làm đèn tiếp theo tắt
 
     mov ah,9
     lea dx,crlf
