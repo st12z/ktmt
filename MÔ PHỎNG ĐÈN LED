@@ -1,8 +1,8 @@
-                            .model small
+.model small
 .stack 100h
 .data
     crlf db 10,13,'$'
-    DK_LED EQU 2070H    ; Ð?a ch? c?ng DK_LED
+    DK_LED EQU 2070H    ; Địa chỉ cổng DK_LED
     tb db 'Vui long chon che do hien thi led: $'
     cnt db ?
     chay db ?
@@ -16,18 +16,18 @@ main proc
         mov ah,9
         lea dx,tb
         int 21h
-        mov ah,1     ; Nh?p vào 1 s? và ch?n ch? d?
+        mov ah,1     ; Nhập vào 1 số và chọn chế độ
         int 21h
         cmp al,'1'
-        je solve1    ; Ch? d? 1: Ðèn sáng b?t t?t d?ng th?i
+        je solve1    ; Chế độ 1: Đèn sáng bật tắt đồng thời
         cmp al,'2'
-        je solve2    ; Ch? d? 2: Ðèn sáng xen k? 
+        je solve2    ; Chế độ 2: Đèn sáng xen kẽ 
         cmp al,'3'
-        je solve3    ; Ch? d? 3: Ðèn sáng l?n lu?t
+        je solve3    ; Chế độ 3: Đèn sáng lần lượt
         cmp al,'4'
-        je solve4    ; Ch? d? 4: Ðèn t?t d?n
+        je solve4    ; Chế độ 4: Đèn tắt dần
         cmp al,'5'
-        je solve5    ; Ch? d? 5: Sâu còn bò t?i
+        je solve5    ; Chế độ 5: Sâu còn bò tới
         cmp al,'0'    
         je thoat
         
@@ -51,94 +51,94 @@ main proc
     int 21h
 main Endp
 
-cheDo1 proc             ; Ðèn sáng t?t d?ng th?i
+cheDo1 proc             ; Đèn sáng tắt đồng thời
   
   lap1:
-    mov al,11111111b    ; Tr?ng thái t?t c? các dèn du?c b?t
-    mov dx,dk_led       ; Gán d? li?u c?ng dk_led vào thanh ghi dx
-    out dx,al           ; Ði?u khi?n c?ng ra -> hi?n th? tr?ng thái led
-    mov cx,12           ; Ð? tr? 12 chu kì
+    mov al,11111111b    ; Trạng thái tất cả các đèn được bật
+    mov dx,dk_led       ; Gán dữ liệu cổng dk_led vào thanh ghi dx
+    out dx,al           ; Điều khiển cổng ra -> hiển thị trạng thái led
+    mov cx,12           ; Độ trễ 12 chu kì
   tre_11:
-    LOOP tre_11         ; Hàm tr? 1
-    mov al,0            ; Các dèn ? tr?ng thái t?t
-    out dx,al           ; Ði?u khi?n c?ng ra -> hi?n th? tr?ng thái led
-    mov cx,12           ; Ð? tr? 12 chu kì
-  tre_12:NOP            ; Hàm tr? 2
+    LOOP tre_11         ; Hàm trễ 1
+    mov al,0            ; Các đèn ở trạng thái tắt
+    out dx,al           ; Điều khiển cổng ra -> hiển thị trạng thái led
+    mov cx,12           ; Độ trễ 12 chu kì
+  tre_12:NOP            ; Hàm trễ 2
     loop tre_12
-    jmp lap1            ; L?p l?i tr?ng thái b?t t?t
+    jmp lap1            ; Lặp lại trạng thái bật tắt
   
-  mov ah,9              ; Xu?ng dòng
+  mov ah,9              ; Xuống dòng
   lea dx,crlf
   int 21h
   ret   
 cheDo1 endp
 
-cheDo2 proc    ;  Sáng xen k?
+cheDo2 proc    ;  Sáng xen kẽ
     lap2:
         
-        mov al,01010101b      ; Ðèn b?t ? v? trí ch?n
-        mov dx,dk_led         ; Gán d? li?u c?ng dk_led vào thanh ghi dx
-        out dx,al             ; Ði?u khi?n c?ng ra -> hi?n th? tr?ng thái led
-        mov cx,32             ; Ð? tr? 32 chu kì
-    tre_21:                   ; Hàm tr?
+        mov al,01010101b      ; Đèn bật ở vị trí chẵn
+        mov dx,dk_led         ; Gán dữ liệu cổng dk_led vào thanh ghi dx
+        out dx,al             ; Điều khiển cổng ra -> hiển thị trạng thái led
+        mov cx,32             ; Độ trễ 32 chu kì
+    tre_21:                   ; Hàm trễ
         NOP
         loop tre_21
-        mov al,10101010b      ; Ðèn b?t ? v? trí l?
-        out dx,al             ; Ði?u khi?n c?ng ra -> hi?n th? tr?ng thái led
-        mov cx,32             ; Ð? tr? 32 chu kì
-    tre_22:                   ; Hàm tr?
+        mov al,10101010b      ; Đèn bật ở vị trí lẻ
+        out dx,al             ; Điều khiển cổng ra -> hiển thị trạng thái led
+        mov cx,32             ; Độ trễ 32 chu kì
+    tre_22:                   ; Hàm trễ
         NOP
         loop tre_22
-        jmp lap2              ; L?p l?i tr?ng thái b?t t?t v? trí ch?n
+        jmp lap2              ; Lặp lại trạng thái bật tắt vị trí chẵn
 
-    mov ah,9                  ; Xu?ng dòng
+    mov ah,9                  ; Xuống dòng
     lea dx,crlf
     int 21h    
     ret
     
 cheDo2 endp
 
-cheDo3 proc  ; Ðèn sáng l?n lu?t
+cheDo3 proc  ; Đèn sáng lần lượt
    lap3:
-       mov al,00000001b          ; Ðèn sáng ? v? trí th? 8
-       mov dx,dk_led             ; Gán d? li?u c?ng dk_led vào thanh ghi dx
-       out dx,al                 ; Ði?u khi?n c?ng ra -> hi?n th? tr?ng thái led
-       mov cx,32                 ; Ð? tr? 32 chu kì
-   tre_3:                        ; Hàm tr?
+       mov al,00000001b          ; Đèn sáng ở vị trí thứ 8
+       mov dx,dk_led             ; Gán dữ liệu cổng dk_led vào thanh ghi dx
+       out dx,al                 ; Điều khiển cổng ra -> hiển thị trạng thái led
+       mov cx,32                 ; Độ trễ 32 chu kì
+   tre_3:                        ; Hàm trễ
        NOP
        loop tre_3                
-       ror al,1                  ; Quay ph?i 1 don v? ->(10000000b) v? trí sáng ? tr? trí s? 1
-       mov dx,dk_led             ; Gán d? li?u c?ng dk_led vào thanh ghi dx
-       out dx,al                 ; Ði?u khi?n c?ng ra -> hi?n th? tr?ng thái led
-       mov cx,32                 ; Ð? tr? 32 chu kì
-       jmp tre_3                 ; L?p l?i quá trình d?ch bit trong nhãn tre_3
+       ror al,1                  ; Quay phải 1 đơn vị ->(10000000b) vị trí sáng ở trị trí số 1
+       mov dx,dk_led             ; Gán dữ liệu cổng dk_led vào thanh ghi dx
+       out dx,al                 ; Điều khiển cổng ra -> hiển thị trạng thái led
+       mov cx,32                 ; Độ trễ 32 chu kì
+       jmp tre_3                 ; Lặp lại quá trình dịch bit trong nhãn tre_3
    
-   mov ah,9                       ; Xu?ng dòng
+   mov ah,9                       ; Xuống dòng
    lea dx,crlf
    int 21h      
    ret 
 cheDo3 endp
 
-cheDo4 proc          ;Ðèn sáng t?t d?n
+cheDo4 proc          ;Đèn sáng tắt dần
     
     lap4:
-        mov chay,10000000b      ; Dùng bi?n chay d? làm s? b? tr? di?u khi?n tr?ng thái dèn led ( ban d?u 1111111b - 10000000b=01111111b)
-                                ; Thì dèn t?t ? v? trí s? 1
-        mov al,11111111b        ; Tr?ng thái t?t c? các dèn du?c b?t
-        mov dx,dk_led           ; Gán d? li?u c?ng dk_led vào thanh ghi dx
-        out dx,al               ; Ði?u khi?n c?ng ra -> hi?n th? tr?ng thái led
-        mov cx,64               ; Ð? tr? 64 chu kì
-    tre_4:                      ; Hàm tr?
+        mov chay,10000000b      ; Dùng biến chay để làm số bị trừ điều khiển trạng thái đèn led ( ban đầu 1111111b - 10000000b=01111111b)
+                                ; Thì đèn tắt ở vị trí số 1
+        mov al,11111111b        ; Trạng thái tất cả các đèn được bật
+        mov dx,dk_led           ; Gán dữ liệu cổng dk_led vào thanh ghi dx
+        out dx,al               ; Điều khiển cổng ra -> hiển thị trạng thái led
+        mov cx,64               ; Độ trễ 64 chu kì
+    tre_4:                      ; Hàm trễ
         NOP
         loop tre_4
         sub al,chay             ; 1111111b - 10000000b=01111111b
-        mov dx,dk_led           ; Gán d? li?u c?ng dk_led vào thanh ghi dx
-        shr chay,1              ; D?ch ph?i bi?n ch?y 1 (10000000b ->01000000b)
-        out dx,al               ; Ði?u khi?n c?ng ra -> hi?n th? tr?ng thái led
-        cmp al,00000000b        ; N?u t?t c? các dèn t?t h?t reset l?i tr?ng thái b?t ban d?u
+        mov dx,dk_led           ; Gán dữ liệu cổng dk_led vào thanh ghi dx
+        shr chay,1              ; Dịch phải biến chạy 1 (10000000b ->01000000b)
+        out dx,al               ; Điều khiển cổng ra -> hiển thị trạng thái led
+        cmp al,00000000b        ; Nếu tất cả các đèn tắt hết reset lại trạng thái bật ban đầu
         je lap4                 
-        mov cx,32               ; Ð? tr? 32 chu kì
-        jmp tre_4               ; nh?y lên nhãn tre_4 ti?p t?c quá trình làm dèn ti?p theo t?t
+        mov cx,32               ; Độ trễ 32 chu kì
+        jmp tre_4               ; nhảy lên nhãn tre_4 tiếp tục quá trình làm đèn tiếp theo tắt
 
     mov ah,9
     lea dx,crlf
@@ -147,35 +147,36 @@ cheDo4 proc          ;Ðèn sáng t?t d?n
     
 cheDo4 endp
 
-cheDo5 proc       ; Sâu bò t?i
-   lea si,list    ; Ð? dài c?a sâu
+cheDo5 proc       ; Sâu bò tới
+   lea si,list    ; Độ dài của sâu
    lap5:
-       mov al,00000001b    ; Tr?ng thái ban d?u c?a m?i con sâu
-       mov dx,dk_led       ; Gán d? li?u c?ng dk_led vào thanh ghi dx
-       out dx,al           ; Ði?u khi?n c?ng ra -> hi?n th? tr?ng thái led
-       mov cx,32           ; Ð? tr? 32 chu kì
-       hoan1:              ; Hàm tr?
+       
+       mov al,00000001b    ; Trạng thái ban đầu của mỗi con sâu
+       mov dx,dk_led       ; Gán dữ liệu cổng dk_led vào thanh ghi dx
+       out dx,al           ; Điều khiển cổng ra -> hiển thị trạng thái led
+       mov cx,32           ; Độ trễ 32 chu kì
+       hoan1:              ; Hàm trễ
             NOP
             loop hoan1
-       lea di,list         ; Thanh ghi di tr? vào list
-       mov cnt,1           ; Kh?i t?o bi?n cnt=1
-   lap_phu:          ; L?p cho d?n khi nào chi?u dài ban d?u sâu là 1 b?ng chi?u dài c?a sâu trong list
-       cmp al,[si]   ; so sánh n?u b?ng chi?u dài c?a sâu
-       je xuly       ; B?t d?u cho sâu ch?y v?i chi?u dài sâu hi?n t?i
-       inc di        ; Không b?ng thì tang chi?u dài c?a sâu lên 1
-       mov al,[di]   ; Gán [di] cho al ( Tr?ng thái dèn led hi?n t?i )
-       mov dx,dk_led ; Gán d? li?u c?ng dk_led vào thanh ghi dx
-       out dx,al     ; Ði?u khi?n c?ng ra -> hi?n th? led
-       mov cx,16     ; Ð? tr? 16 chu kì
-       hoan2:        ; Hàm tr? 2
+       lea di,list         ; Thanh ghi di trỏ vào list
+       mov cnt,1           ; Khởi tạo biến cnt=1
+   lap_phu:          ; Lặp cho đến khi nào chiều dài ban đầu sâu là 1 bằng chiều dài của sâu trong list
+       cmp al,[si]   ; so sánh nếu bằng chiều dài của sâu
+       je xuly       ; Bắt đầu cho sâu chạy với chiều dài sâu hiện tại
+       inc di        ; Không bằng thì tăng chiều dài của sâu lên 1
+       mov al,[di]   ; Gán [di] cho al ( Trạng thái đèn led hiện tại )
+       mov dx,dk_led ; Gán dữ liệu cổng dk_led vào thanh ghi dx
+       out dx,al     ; Điều khiển cổng ra -> hiển thị led
+       mov cx,16     ; Độ trễ 16 chu kì
+       hoan2:        ; Hàm trễ 2
             NOP
             loop hoan2
-       inc cnt       ; Tang bi?n cnt
-       jmp lap_phu   ; Nh?y lên lap_phu
+       inc cnt       ; Tăng biến cnt
+       jmp lap_phu   ; Nhảy lên lap_phu
        xuly:
-            mov dx,dk_led    ; Gán d? li?u c?ng dk_led vào thanh ghi dx
-            out dx,al        ; Hi?n th? led
-            cmp [si],11111111b    ; N?u chi?u dài sâu là 8 thì reset l?i v? 1
+            mov dx,dk_led    ; Gán dữ liệu cổng dk_led vào thanh ghi dx
+            out dx,al        ; Hiển thị led
+            cmp [si],11111111b    ; Nếu chiều dài sâu là 8 thì reset lại về 1
             je return
             mov cx,16
        
@@ -184,24 +185,24 @@ cheDo5 proc       ; Sâu bò t?i
        NOP
        loop tre_5       
        rol al,1       ; Quay trái al 1 bit
-       mov dx,dk_led  ; Gán d? li?u c?ng dk_led vào thanh ghi dx
-       out dx,al      ; Hi?n th? led
-       mov bl,[si]    ; Gán tr?ng thái con sâu hi?n t?i cho bl
-       mov cl,cnt     ; Gán s? lu?ng bit c?n xoay cho cl
-       ror bl,cl      ; Xoay bl sang ph?i cl bit ( Tr?ng thái k?t thúc c?a tuong ?ng tr?ng thái con sâu trong list 
-                      ; ví d? ?ng v?i sâu d? dài 1: 00000001b thì k?t thúc là 1000000b
-       mov cx,16      ; Tr? 16 chu kì
-       cmp al,bl      ; N?u d?t d?n tr?ng thái k?t thúc thì nh?y d?n hoan3
+       mov dx,dk_led  ; Gán dữ liệu cổng dk_led vào thanh ghi dx
+       out dx,al      ; Hiển thị led
+       mov bl,[si]    ; Gán trạng thái con sâu hiện tại cho bl
+       mov cl,cnt     ; Gán số lượng bit cần xoay cho cl
+       ror bl,cl      ; Xoay bl sang phải cl bit ( Trạng thái kết thúc của tương ứng trạng thái con sâu trong list 
+                      ; ví dụ ứng với sâu độ dài 1: 00000001b thì kết thúc là 1000000b
+       mov cx,16      ; Trễ 16 chu kì
+       cmp al,bl      ; Nếu đạt đến trạng thái kết thúc thì nhảy đền hoan3
        je hoan3
-       jmp tre_5      ; Ti?p t?c di chuy?n con sâu 
+       jmp tre_5      ; Tiếp tục di chuyển con sâu 
        hoan3:
         NOP
         loop hoan3
-        inc si        ; Tang tr?ng thái con sâu lên 1 trong list
+        inc si        ; Tăng trạng thái con sâu lên 1 trong list
         jmp lap5
    return:
-   lea si,list
-   jmp lap5
+        lea si,list
+        jmp lap5
    mov ah,9
    lea dx,crlf
    int 21h      
